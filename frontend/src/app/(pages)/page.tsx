@@ -13,11 +13,14 @@ type PriceRange = {
   max?: number;
 }
 
+type SortValue = 'price-asc' | 'price-desc' | '';
+
 export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<PriceRange>({});
+  const [sort, setSort] = useState<SortValue>('');
 
   const handlePriceChange = useCallback((min?: number, max?: number) => {
     setPriceRange({ min, max });
@@ -30,6 +33,7 @@ export default function HomePage() {
           onSearchChange={setSearchTerm}
           onCategoryChange={setCategories}
           onPriceChange={handlePriceChange}
+          onSortChange={setSort}
         />
       </aside>
 
@@ -46,6 +50,7 @@ export default function HomePage() {
           categories={categories}
           price_min={priceRange.min}
           price_max={priceRange.max}
+          sort={sort}
         />
       </main>
 

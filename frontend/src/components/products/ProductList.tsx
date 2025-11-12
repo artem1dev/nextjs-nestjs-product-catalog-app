@@ -10,15 +10,17 @@ type Props = {
   categories?: string[];
   price_min?: number;
   price_max?: number;
+  sort?: 'price-asc' | 'price-desc' | '';
 };
 
-export function ProductList({ search, categories, price_min, price_max }: Props) {
+export function ProductList({ search, categories, price_min, price_max, sort }: Props) {
   
   const { data: products, isLoading, error } = useGetProductsQuery({
     search,
     category: categories,
     price_min,
     price_max,
+    sort: sort || undefined,
   });
 
   if (isLoading) return <Loading />;

@@ -32,7 +32,7 @@ export class ProductService {
 
   async findAll(query: {
     search?: string;
-    category?: string[];
+    category?: string | string[];
     price_min?: string;
     price_max?: string;
     sort?: 'price-asc' | 'price-desc';
@@ -47,7 +47,14 @@ export class ProductService {
     }
 
     if (query.category && query.category.length > 0) {
-      const categories = Array.isArray(query.category) ? query.category : [query.category];
+      let categories: string[] = [];
+
+      if (Array.isArray(query.category)) {
+        categories = query.category;
+      } else if (typeof query.category === 'string') {
+        categories = query.category.split(',');
+      }
+
       const lowercaseCategories = categories.map(cat => cat.toLowerCase());
 
       where.category = {

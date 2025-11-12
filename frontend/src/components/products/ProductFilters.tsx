@@ -3,39 +3,31 @@ import { Input } from '@/components/ui/Input';
 import { Checkbox } from '@/components/ui/Checkbox';
 import styles from './ProductFilters.module.scss';
 import { ProductCategory } from '@/types';
-import { useState, useEffect } from 'react';
-import { useDebounce } from '@/lib/hooks/useDebounce';
+import { useState } from 'react';
+
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
+
+type SortValue = 'price-asc' | 'price-desc' | '';
 
 type Props = {
   onSearchChange: (value: string) => void;
   onCategoryChange: (values: string[]) => void;
   onPriceChange: (min?: number, max?: number) => void;
+  onSortChange: (value: SortValue) => void;
 };
 
 const CATEGORIES: ProductCategory[] = ["Clothing", "Shoes", "Electronics", "Accessories", "Other"];
+const MAX_PRICE = 5000;
 
 export function ProductFilters({
   onSearchChange,
   onCategoryChange,
   onPriceChange,
+  onSortChange,
 }: Props) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-
-  const [minPrice, setMinPrice] = useState<string>('');
-  const [maxPrice, setMaxPrice] = useState<string>('');
-
-  const debouncedMinPrice = useDebounce(minPrice, 500);
-  const debouncedMaxPrice = useDebounce(maxPrice, 500);
-
-  useEffect(() => {
-    const min = parseFloat(debouncedMinPrice);
-    const max = parseFloat(debouncedMaxPrice);
-
-    onPriceChange(
-      !isNaN(min) ? min : undefined,
-      !isNaN(max) ? max : undefined
-    );
-  }, [debouncedMinPrice, debouncedMaxPrice, onPriceChange]);
+  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>([0, MAX_PRICE]);
 
   const handleCategoryToggle = (category: string) => {
     const newCategories = selectedCategories.includes(category)
@@ -44,6 +36,22 @@ export function ProductFilters({
 
     setSelectedCategories(newCategories);
     onCategoryChange(newCategories);
+  };
+
+  const handlePriceSliderChange = (value: number | number[]) => {
+    if (Array.isArray(value)) {
+      setLocalPriceRange(value as [number, number]);
+    }
+  };
+
+  const handlePriceChangeComplete = (value: number | number[]) => {
+    if (Array.isArray(value)) {
+      const [min, max] = value;
+      onPriceChange(
+        min > 0 ? min : undefined,
+        max < MAX_PRICE ? max : undefined
+      );
+    }
   };
 
   return (
@@ -71,22 +79,19 @@ export function ProductFilters({
 
       <div className={styles.filterGroup}>
         <h3>Price Range</h3>
-        <div className={styles.priceInputs}>
-          <Input
-            type="number"
-            placeholder="Min"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            className={styles.priceInput}
+        <div className={styles.sliderWrapper}>
+          <Slider
+            range
+            min={0}
+            max={MAX_PRICE}
+            value={localPriceRange}
+            onChange={handlePriceSliderChange}
+            onChangeComplete={handlePriceChangeComplete}
           />
-          <span className={styles.priceSeparator}>-</span>
-          <Input
-            type="number"
-            placeholder="Max"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            className={styles.priceInput}
-          />
+          <div className={styles.priceLabels}>
+            <span>${localPriceRange[0]}</span>
+            <span>${localPriceRange[1]}</span>
+          </div>
         </div>
       </div>
 
@@ -94,8 +99,9 @@ export function ProductFilters({
         <h3>Sort by</h3>
         <select
           className={styles.sortSelect}
+          onChange={(e) => onSortChange(e.target.value as SortValue)}
         >
-          <option value="">Sort by Price</option>
+          <option value="">Default</option>
           <option value="price-asc">Low to High</option>
           <option value="price-desc">High to Low</option>
         </select>

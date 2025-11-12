@@ -17,7 +17,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 
 class FindProductsQueryDto {
   search?: string;
-  category?: string[];
+  category?: string | string[];
   price_min?: string;
   price_max?: string;
   sort?: 'price-asc' | 'price-desc';

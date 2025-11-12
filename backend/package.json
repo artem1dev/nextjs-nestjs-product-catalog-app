@@ -14,6 +14,7 @@
     "start:prod": "node dist/main",
     "prisma:generate": "dotenv -- npx prisma generate",
     "prisma:push": "dotenv -- npx prisma db push",
+    "prisma:pull": "dotenv -- npx prisma db pull",
     "prisma:migrate": "dotenv -- npx prisma migrate dev",
     "prisma:studio": "dotenv -- npx prisma studio"
   },

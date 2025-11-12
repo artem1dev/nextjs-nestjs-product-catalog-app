@@ -1,0 +1,21 @@
+.related {
+  width: 100%;
+  margin-top: 4rem;
+  border-top: 1px solid #eee;
+  padding-top: 2rem;
+
+  h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
